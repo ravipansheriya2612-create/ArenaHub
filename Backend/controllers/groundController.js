@@ -1,4 +1,4 @@
-import Ground from '../models/ground.js';
+import Ground from '../models/Ground.js';
 import { v2 as cloudinary } from "cloudinary";
 
 export const getAllGrounds = async (req, res) => {
