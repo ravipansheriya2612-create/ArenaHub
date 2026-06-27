@@ -6,8 +6,11 @@ import toast from "react-hot-toast";
 function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
 
-    const user = JSON.parse(localStorage.getItem("user"));
-
+    const storedUser = localStorage.getItem("user");
+    const user = storedUser && storedUser !== "undefined"
+        ? JSON.parse(storedUser)
+        : null;
+        
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
