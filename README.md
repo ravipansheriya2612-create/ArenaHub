@@ -82,4 +82,3 @@ ravipansheriya2612_db_user
 
 8zt0hIUl5z8hk6ZO
 
-mongodb+srv://<db_username>:8zt0hIUl5z8hk6ZO@cluster1.65hjzun.mongodb.net/?appName=Cluster1
