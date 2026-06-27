@@ -70,7 +70,6 @@ const BookingSchema = new mongoose.Schema(
             trim: true,
         }
     },
-
     { timestamps: true }
 );
 

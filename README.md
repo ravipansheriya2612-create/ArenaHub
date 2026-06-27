@@ -1,20 +1,3 @@
-Email + Password
-      ↓
-JWT Token Generated
-      ↓
-Token Stored
-      ↓
-Book Ground
-      ↓
-protect Middleware
-      ↓
-User Verified
-      ↓
-Booking Created
-
-This is why JWT middleware is needed before Booking APIs. 🚀
-
-
 # ArenaHub
 
 A modern MERN Stack Sports Ground Booking Platform.
@@ -73,12 +56,3 @@ npm run dev
 ## Environment Variables
 
 Create `.env` using `.env.example`.
-
-
-
-
-
-ravipansheriya2612_db_user
-
-8zt0hIUl5z8hk6ZO
-

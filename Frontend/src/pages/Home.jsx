@@ -51,7 +51,6 @@ function Home() {
         console.log("Searching:", search);
     };
 
-
     return (
         <>
             <Navbar />
@@ -207,6 +206,6 @@ function Home() {
         </>
     );
 
-}
+};
 
 export default Home;

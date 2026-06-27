@@ -44,7 +44,7 @@ export const createBooking = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const getMyBookings = async (req, res) => {
     try {
@@ -64,7 +64,7 @@ export const getMyBookings = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const cancelBooking = async (req, res) => {
     try {
@@ -100,7 +100,7 @@ export const cancelBooking = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const checkBookedSlots = async (req, res) => {
     try {
@@ -126,7 +126,7 @@ export const checkBookedSlots = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const getAllBookings = async (req, res) => {
     try {
@@ -148,4 +148,4 @@ export const getAllBookings = async (req, res) => {
             error: error.message,
         });
     }
-}
+};

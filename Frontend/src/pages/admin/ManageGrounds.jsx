@@ -158,6 +158,6 @@ function ManageGrounds() {
             <Footer />
         </>
     );
-}
+};
 
 export default ManageGrounds;

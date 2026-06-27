@@ -114,8 +114,8 @@ function MyBookings() {
 
                                             <span
                                                 className={`shrink-0 px-3 py-1 rounded-full text-xs font-bold capitalize ${booking.status === "booked"
-                                                        ? "bg-white text-green-700"
-                                                        : "bg-blue-100 text-blue-700"
+                                                    ? "bg-white text-green-700"
+                                                    : "bg-blue-100 text-blue-700"
                                                     }`}
                                             >
                                                 {booking.status}
@@ -171,6 +171,6 @@ function MyBookings() {
         </>
     );
 
-}
+};
 
 export default MyBookings;

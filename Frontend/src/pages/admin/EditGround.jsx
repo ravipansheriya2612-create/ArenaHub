@@ -33,7 +33,7 @@ function EditGround() {
             console.log(error);
             toast.error("Failed to fetch ground");
         }
-    }
+    };
 
     const handleUpdate = async (e) => {
         e.preventDefault();
@@ -313,6 +313,6 @@ function EditGround() {
         </>
     );
 
-}
+};
 
 export default EditGround;

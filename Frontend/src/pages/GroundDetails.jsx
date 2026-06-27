@@ -246,7 +246,7 @@ function GroundDetails() {
         </div>
       </>
     );
-  }
+  };
 
   return (
     <>
@@ -543,6 +543,6 @@ function GroundDetails() {
     </>
   );
 
-}
+};
 
 export default GroundDetails;

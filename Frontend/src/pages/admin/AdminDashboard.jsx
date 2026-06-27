@@ -109,6 +109,6 @@ function AdminDashboard() {
             <Footer />
         </>
     );
-}
+};
 
 export default AdminDashboard;

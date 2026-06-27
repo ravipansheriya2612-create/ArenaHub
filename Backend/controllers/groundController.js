@@ -18,7 +18,7 @@ export const getAllGrounds = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const createGround = async (req, res) => {
     try {
@@ -42,7 +42,7 @@ export const createGround = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const getGroundById = async (req, res) => {
     try {
@@ -69,7 +69,7 @@ export const getGroundById = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const updateGround = async (req, res) => {
     try {

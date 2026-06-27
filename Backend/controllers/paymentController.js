@@ -33,7 +33,7 @@ export const createOrder = async (req, res) => {
             error: error.message,
         });
     }
-}
+};
 
 export const verifyPayment = async (req, res) => {
     try {
@@ -74,4 +74,4 @@ export const verifyPayment = async (req, res) => {
         });
 
     }
-}
+};

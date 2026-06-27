@@ -19,7 +19,7 @@ function AllBookings() {
             console.log(error);
             toast.error("Failed to fetch bookings");
         }
-    }
+    };
 
     return (
         <>
@@ -176,7 +176,7 @@ function AllBookings() {
             <Footer />
         </>
     );
-}
+};
 
 
 export default AllBookings;

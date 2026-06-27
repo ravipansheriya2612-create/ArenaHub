@@ -14,7 +14,7 @@ function AddGround() {
         locationUrl: "",
         image: "",
         description: "",
-    })
+    });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,7 +54,7 @@ function AddGround() {
             console.log(error);
             toast.error("Failed to add ground");
         }
-    }
+    };
 
     return (
         <>
@@ -278,6 +278,6 @@ function AddGround() {
         </>
     );
 
-}
+};
 
 export default AddGround;

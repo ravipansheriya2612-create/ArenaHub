@@ -7,10 +7,8 @@ function Navbar() {
     const [menuOpen, setMenuOpen] = useState(false);
 
     const storedUser = localStorage.getItem("user");
-    const user = storedUser && storedUser !== "undefined"
-        ? JSON.parse(storedUser)
-        : null;
-        
+    const user = storedUser && storedUser !== "undefined" ? JSON.parse(storedUser) : null;
+
     const logout = () => {
         localStorage.removeItem("token");
         localStorage.removeItem("user");
@@ -182,6 +180,6 @@ function Navbar() {
         </nav>
     );
 
-}
+};
 
 export default Navbar;

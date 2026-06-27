@@ -31,7 +31,8 @@ const reviewSchema = new mongoose.Schema({
         trim: true,
         default: "",
     }
-}, { timestamps: true }
+},
+    { timestamps: true }
 );
 
 const Review = mongoose.model("Review", reviewSchema);
