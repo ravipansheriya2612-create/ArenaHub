@@ -102,7 +102,7 @@ function ManageGrounds() {
                                                 </span>
                                             </div>
 
-                                            <div className="border-b flex justify-between gap-3 border-slate-100 pb-3">
+                                            <div className="border-b flex justify-between gap-5 border-slate-100 pb-3">
                                                 <span className="text-slate-500 mb-1">Address : </span>
 
                                                 <span>
