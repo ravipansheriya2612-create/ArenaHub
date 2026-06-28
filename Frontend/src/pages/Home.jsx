@@ -25,19 +25,27 @@ function Home() {
         }
     };
 
-    const fetchRatings = async () => {
+    const fetchRatings = async (groundsData) => {
         const ratingData = {};
 
         await Promise.all(
-            grounds.map(async (ground) => {
-                const res = await API.get(`/reviews/ground/${ground._id}`);
+            groundsData.map(async (ground) => {
+                try {
+                    const res = await API.get(`/reviews/ground/${ground._id}`);
 
-                ratingData[ground._id] = {
-                    avgRating: res.data.avgRating,
-                    count: res.data.count,
+                    ratingData[ground._id] = {
+                        avgRating: res.data.avgRating,
+                        count: res.data.count,
+                    };
+                } catch (err) {
+                    ratingData[ground._id] = {
+                        avgRating: 0,
+                        count: 0,
+                    };
                 }
             })
         );
+
         setRatings(ratingData);
     };
 
