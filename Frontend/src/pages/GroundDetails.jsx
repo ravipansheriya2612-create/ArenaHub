@@ -163,8 +163,12 @@ function GroundDetails() {
               }
             );
 
-            if (reviewData.comment.trim()) {
-              await submitReview(token);
+            try {
+              if (reviewData.comment.trim()) {
+                await submitReview(token);
+              }
+            } catch (reviewError) {
+              console.log("Review save failed:", reviewError);
             }
 
             toast.success("Payment successful & booking confirmed", {
