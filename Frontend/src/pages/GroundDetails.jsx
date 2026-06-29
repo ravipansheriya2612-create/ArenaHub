@@ -50,6 +50,25 @@ function GroundDetails() {
     }
   };
 
+  const submitReview = async (token) => {
+    if (!reviewData.comment.trim()) return;
+
+    await API.post(
+      "/reviews",
+      {
+        ground: id,
+        rating: reviewData.rating,
+        comment: reviewData.comment,
+        aiComment: reviewData.aiComment,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+  };
+
   const handleBooking = async () => {
     const phoneRegex = /^[6-9]\d{9}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -144,12 +163,24 @@ function GroundDetails() {
               }
             );
 
+            if (reviewData.comment.trim()) {
+              await submitReview(token);
+            }
+
             toast.success("Payment successful & booking confirmed", {
               id: bookingToast,
             });
 
             fetchBookedSlots(selectedDate);
+            fetchReviews();
+
             setSelectedSlot("");
+            setReviewData({
+              rating: 5,
+              comment: "",
+              aiComment: "",
+            });
+
             navigate("/my-bookings");
           } catch (error) {
             console.log(error);
