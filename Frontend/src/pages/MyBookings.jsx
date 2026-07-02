@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 
 function MyBookings() {
     const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchBookings();
@@ -13,7 +14,14 @@ function MyBookings() {
 
     const fetchBookings = async () => {
         try {
+            setLoading(true);
+
             const token = localStorage.getItem("token");
+
+            if (!token) {
+                setBookings([]);
+                return;
+            }
 
             const res = await API.get("/bookings/my-bookings", {
                 headers: {
@@ -24,8 +32,9 @@ function MyBookings() {
             setBookings(res.data.bookings);
         } catch (error) {
             console.log(error);
+        } finally {
+            setLoading(false);
         }
-
     };
 
     const cancelBooking = async (id) => {
@@ -75,18 +84,16 @@ function MyBookings() {
                         </p>
                     </div>
 
-                    {activeBookings.length === 0 ? (
-                        <div className="bg-white rounded-3xl shadow-xl p-10 text-center">
-                            <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center text-4xl mb-5">
-                                🏟️
-                            </div>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                            <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
 
-                            <h2 className="text-2xl font-extrabold text-slate-900">
-                                No active bookings found
-                            </h2>
+                            <p className="mt-5 text-slate-600 font-medium">
+                                Loading your bookings...
+                            </p>
 
-                            <p className="text-slate-500 mt-2">
-                                You have not booked any ground yet.
+                            <p className="text-sm text-slate-500 mt-2">
+                                Server is starting. This may take a few seconds.
                             </p>
                         </div>
                     ) : (

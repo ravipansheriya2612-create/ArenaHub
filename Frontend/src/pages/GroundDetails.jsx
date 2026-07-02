@@ -29,6 +29,27 @@ function GroundDetails() {
     fetchReviews();
   }, []);
 
+  useEffect(() => {
+    const pendingBooking = JSON.parse(localStorage.getItem("pendingBooking"));
+
+    if (pendingBooking && pendingBooking.ground === id) {
+      setSelectedDate(pendingBooking.date || "");
+      setSelectedSlot(pendingBooking.slot || "");
+
+      if (pendingBooking.customerInfo) {
+        setCustomerInfo(pendingBooking.customerInfo);
+      }
+
+      if (pendingBooking.reviewData) {
+        setReviewData(pendingBooking.reviewData);
+      }
+
+      if (pendingBooking.date) {
+        fetchBookedSlots(pendingBooking.date);
+      }
+    }
+  }, [id]);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -102,9 +123,10 @@ function GroundDetails() {
             ground: id,
             date: selectedDate,
             slot: selectedSlot,
+            customerInfo,
+            reviewData,
           })
         );
-
         toast.error("Please login first");
 
         navigate("/login", {
@@ -185,6 +207,7 @@ function GroundDetails() {
               aiComment: "",
             });
 
+            localStorage.removeItem("pendingBooking");
             navigate("/my-bookings");
           } catch (error) {
             console.log(error);
