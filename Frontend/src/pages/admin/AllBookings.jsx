@@ -6,18 +6,27 @@ import toast from "react-hot-toast";
 
 function AllBookings() {
     const [bookings, setBookings] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => { fetchAllBookings(); }, [])
 
     const fetchAllBookings = async () => {
         try {
+            setLoading(true);
+
             const token = localStorage.getItem("token");
 
             const res = await API.get("/bookings", { headers: { Authorization: `Bearer ${token}` } })
-            setBookings(res.data.bookings);
+            setBookings(
+                res.data.bookings.sort(
+                    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+                )
+            );
         } catch (error) {
             console.log(error);
-            toast.error("Failed to fetch bookings");
+            toast.error(error.response?.data?.message || "Failed to fetch bookings");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -42,18 +51,29 @@ function AllBookings() {
                         </p>
                     </div>
 
-                    {bookings.length === 0 ? (
-                        <div className="bg-white rounded-3xl p-10 text-center shadow-xl">
-                            <div className="text-5xl mb-4">📅</div>
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                            <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
 
-                            <h2 className="text-2xl font-extrabold text-slate-900">
-                                No bookings found
-                            </h2>
+                            <p className="mt-5 text-slate-600 font-medium">
+                                Loading bookings...
+                            </p>
 
-                            <p className="text-slate-500 mt-2">
-                                Customer bookings will appear here.
+                            <p className="text-sm text-slate-500 mt-2">
+                                Please wait while the server starts.
                             </p>
                         </div>
+                    ) : bookings.length === 0 ? (<div className="bg-white rounded-3xl p-10 text-center shadow-xl">
+                        <div className="text-5xl mb-4">📅</div>
+
+                        <h2 className="text-2xl font-extrabold text-slate-900">
+                            No bookings found
+                        </h2>
+
+                        <p className="text-slate-500 mt-2">
+                            Customer bookings will appear here.
+                        </p>
+                    </div>
                     ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                             {bookings.map((booking) => (
@@ -116,14 +136,14 @@ function AllBookings() {
                                             <div className="flex justify-between gap-4 py-2 border-b border-slate-200">
                                                 <span className="text-slate-500">Date</span>
                                                 <span className="font-semibold text-slate-800">
-                                                    {booking.bookingDate}
+                                                    {new Date(booking.bookingDate).toLocaleDateString("en-IN")}
                                                 </span>
                                             </div>
 
                                             <div className="flex justify-between gap-4 py-2 border-b border-slate-200">
                                                 <span className="text-slate-500">Time</span>
                                                 <span className="font-semibold text-slate-800">
-                                                    {booking.startTime}
+                                                    {booking.startTime} - {booking.endTime}
                                                 </span>
                                             </div>
 

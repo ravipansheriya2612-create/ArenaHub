@@ -6,6 +6,7 @@ import Footer from "../components/Footer";
 import toast from "react-hot-toast";
 
 function Register() {
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -17,18 +18,23 @@ function Register() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (loading) return;
+
+        setLoading(true);
+
         try {
             const res = await API.post("/auth/register", formData);
 
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
 
-            toast.success(res.data.message);
+            toast.success(res.data.message || "Registration Successful");
             navigate("/");
-
         } catch (error) {
             console.log(error);
-            toast.error("Registration Failed");
+            toast.error(error.response?.data?.message || "Registration Failed");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -109,9 +115,13 @@ function Register() {
 
                         <button
                             type="submit"
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition text-sm sm:text-base"
+                            disabled={loading}
+                            className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
+                                    ? "bg-green-400 cursor-not-allowed text-white"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                }`}
                         >
-                            Create Account
+                            {loading ? "Creating Account..." : "Create Account"}
                         </button>
                     </form>
 

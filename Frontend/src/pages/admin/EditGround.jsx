@@ -11,6 +11,7 @@ function EditGround() {
     const navigate = useNavigate();
 
     const [previewImage, setPreviewImage] = useState("");
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: "",
         sportType: "",
@@ -38,18 +39,22 @@ function EditGround() {
     const handleUpdate = async (e) => {
         e.preventDefault();
 
+        if (loading) return;
+
+        setLoading(true);
+
         try {
             const token = localStorage.getItem("token");
 
             const data = new FormData();
 
-            data.append("name", formData.name);
+            data.append("name", formData.name.trim());
             data.append("sportType", formData.sportType);
             data.append("pricePerHour", formData.pricePerHour);
-            data.append("address", formData.address);
-            data.append("city", formData.city);
-            data.append("locationUrl", formData.locationUrl);
-            data.append("description", formData.description);
+            data.append("address", formData.address.trim());
+            data.append("city", formData.city.trim());
+            data.append("locationUrl", formData.locationUrl?.trim() || "");
+            data.append("description", formData.description?.trim() || "");
 
             if (formData.image instanceof File) {
                 data.append("image", formData.image);
@@ -66,7 +71,9 @@ function EditGround() {
             navigate("/admin/grounds", { replace: true });
         } catch (error) {
             console.log(error);
-            toast.error("Failed to update ground");
+            toast.error(error.response?.data?.message || "Failed to update ground");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -300,9 +307,20 @@ function EditGround() {
 
                             <button
                                 type="submit"
-                                className="w-full bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-4 rounded-xl font-bold text-lg transition shadow-lg"
+                                disabled={loading}
+                                className={`w-full py-4 rounded-xl font-bold text-lg transition shadow-lg flex items-center justify-center gap-3 ${loading
+                                    ? "bg-blue-400 cursor-not-allowed text-white"
+                                    : "bg-linear-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
+                                    }`}
                             >
-                                Update Ground
+                                {loading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Updating Ground...
+                                    </>
+                                ) : (
+                                    "Update Ground"
+                                )}
                             </button>
                         </form>
                     </div>
@@ -312,7 +330,6 @@ function EditGround() {
             <Footer />
         </>
     );
-
 };
 
 export default EditGround;

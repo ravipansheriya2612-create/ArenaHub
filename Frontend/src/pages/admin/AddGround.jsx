@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import API from "../../services/api";
 import toast from "react-hot-toast";
 
 function AddGround() {
+    const [loading, setLoading] = useState(false);
+    const [preview, setPreview] = useState("");
     const [formData, setFormData] = useState({
         name: "",
         sportType: "",
@@ -16,27 +18,37 @@ function AddGround() {
         description: "",
     });
 
+    const fileInputRef = useRef(null);
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (loading) return;
+
+        setLoading(true);
 
         try {
             const token = localStorage.getItem("token");
 
             const data = new FormData();
 
-            data.append("name", formData.name);
+            data.append("name", formData.name.trim());
             data.append("sportType", formData.sportType);
             data.append("pricePerHour", formData.pricePerHour);
-            data.append("address", formData.address);
-            data.append("city", formData.city);
-            data.append("locationUrl", formData.locationUrl);
-            data.append("description", formData.description);
+            data.append("address", formData.address.trim());
+            data.append("city", formData.city.trim());
+            data.append("locationUrl", formData.locationUrl.trim());
+            data.append("description", formData.description.trim());
 
             if (formData.image) {
                 data.append("image", formData.image);
             }
 
-            const res = await API.post("/grounds", data, { headers: { Authorization: `Bearer ${token}` } })
+            const res = await API.post("/grounds", data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
 
             toast.success(res.data.message || "Ground added successfully");
 
@@ -49,10 +61,18 @@ function AddGround() {
                 locationUrl: "",
                 image: "",
                 description: "",
-            })
+            });
+
+            setPreview("");
+
+            if (fileInputRef.current) {
+                fileInputRef.current.value = "";
+            }
         } catch (error) {
             console.log(error);
-            toast.error("Failed to add ground");
+            toast.error(error.response?.data?.message || "Failed to add ground");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -150,6 +170,7 @@ function AddGround() {
                                     <input
                                         type="number"
                                         placeholder="500"
+                                        min="100"
                                         value={formData.pricePerHour}
                                         onChange={(e) =>
                                             setFormData({
@@ -211,7 +232,7 @@ function AddGround() {
                                     </label>
 
                                     <input
-                                        type="text"
+                                        type="url"
                                         placeholder="https://maps.google.com/..."
                                         value={formData.locationUrl}
                                         onChange={(e) =>
@@ -232,16 +253,32 @@ function AddGround() {
                                 </label>
 
                                 <input
+                                    ref={fileInputRef}
                                     type="file"
                                     accept="image/*"
-                                    onChange={(e) =>
+                                    disabled={loading}
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+
+                                        if (!file) return;
+
                                         setFormData({
                                             ...formData,
-                                            image: e.target.files[0],
-                                        })
-                                    }
+                                            image: file,
+                                        });
+
+                                        setPreview(URL.createObjectURL(file));
+                                    }}
                                     className="w-full border border-dashed border-slate-300 rounded-xl px-4 py-4"
                                 />
+
+                                {preview && (
+                                    <img
+                                        src={preview}
+                                        alt="Ground Preview"
+                                        className="mt-4 h-52 w-full object-cover rounded-xl border"
+                                    />
+                                )}
                             </div>
 
                             <div>
@@ -252,6 +289,7 @@ function AddGround() {
                                 <textarea
                                     rows="5"
                                     placeholder="Write something about the ground..."
+                                    maxLength={500}
                                     value={formData.description}
                                     onChange={(e) =>
                                         setFormData({
@@ -261,13 +299,27 @@ function AddGround() {
                                     }
                                     className="w-full border border-slate-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                                 />
+                                <p>
+                                    {formData.description.length}/500
+                                </p>
                             </div>
 
                             <button
                                 type="submit"
-                                className="w-full bg-linear-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white py-4 rounded-xl font-bold text-lg transition shadow-lg"
+                                disabled={loading}
+                                className={`w-full py-4 rounded-xl font-bold text-lg transition shadow-lg flex items-center justify-center gap-3 ${loading
+                                    ? "bg-green-400 cursor-not-allowed text-white"
+                                    : "bg-linear-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white"
+                                    }`}
                             >
-                                Add Ground
+                                {loading ? (
+                                    <>
+                                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Adding Ground...
+                                    </>
+                                ) : (
+                                    "Add Ground"
+                                )}
                             </button>
                         </form>
                     </div>

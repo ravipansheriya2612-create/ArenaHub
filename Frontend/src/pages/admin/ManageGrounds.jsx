@@ -8,15 +8,22 @@ import toast from "react-hot-toast";
 
 function ManageGrounds() {
     const [grounds, setGrounds] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [deleteLoading, setDeleteLoading] = useState("");
 
     useEffect(() => { fetchGrounds() }, []);
 
     const fetchGrounds = async () => {
         try {
+            setLoading(true);
+
             const res = await API.get("/grounds");
             setGrounds(res.data.grounds);
         } catch (error) {
             console.log(error);
+            toast.error("Failed to fetch grounds");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -26,17 +33,21 @@ function ManageGrounds() {
 
             if (!confirmDelete) return;
 
+            setDeleteLoading(id);
+
             const token = localStorage.getItem("token");
 
             await API.delete(`/grounds/${id}`, { headers: { Authorization: `Bearer ${token}` } })
 
             toast.success("Ground deleted successfully");
-            fetchGrounds();
+            setDeleteLoading("");
+            setGrounds((prev) => prev.filter((ground) => ground._id !== id));
         } catch (error) {
             console.log(error);
-            toast.error("Failed to delete ground");
+            toast.error(error.response?.data?.message || "Failed to delete ground");
+        } finally {
+            setDeleteLoading("");
         }
-
     }
 
     return (
@@ -60,7 +71,14 @@ function ManageGrounds() {
                         </p>
                     </div>
 
-                    {grounds.length === 0 ? (
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                            <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                            <p className="mt-5 text-slate-600 font-medium">
+                                Loading grounds...
+                            </p>
+                        </div>
+                    ) : grounds.length === 0 ? (
                         <div className="bg-white rounded-3xl p-10 text-center shadow-xl">
                             <div className="text-5xl mb-4">🏟️</div>
 
@@ -142,9 +160,13 @@ function ManageGrounds() {
 
                                             <button
                                                 onClick={() => deleteGround(ground._id)}
-                                                className="bg-red-500 hover:bg-red-600 text-white py-3 rounded-xl font-bold transition"
+                                                disabled={deleteLoading === ground._id}
+                                                className={`py-3 rounded-xl font-bold transition ${deleteLoading === ground._id
+                                                        ? "bg-red-300 cursor-not-allowed text-white"
+                                                        : "bg-red-500 hover:bg-red-600 text-white"
+                                                    }`}
                                             >
-                                                Delete
+                                                {deleteLoading === ground._id ? "Deleting..." : "Delete"}
                                             </button>
                                         </div>
                                     </div>

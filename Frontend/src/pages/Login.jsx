@@ -9,6 +9,7 @@ function Login() {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -17,6 +18,10 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+
+        if (loading) return;
+
+        setLoading(true);
 
         try {
             const res = await API.post("/auth/login", {
@@ -28,10 +33,14 @@ function Login() {
             localStorage.setItem("user", JSON.stringify(res.data.user));
 
             toast.success("Login Successful");
+
             navigate(redirectPath);
+
         } catch (error) {
             console.log(error);
             toast.error("Login Failed");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -82,9 +91,13 @@ function Login() {
 
                         <button
                             type="submit"
-                            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition text-sm sm:text-base"
+                            disabled={loading}
+                            className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
+                                ? "bg-green-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700 text-white"
+                                }`}
                         >
-                            Login
+                            {loading ? "Logging in..." : "Login"}
                         </button>
                     </form>
 
