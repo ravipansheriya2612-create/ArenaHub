@@ -10,6 +10,7 @@ function Home() {
     const [grounds, setGrounds] = useState([]);
     const [search, setSearch] = useState("");
     const [ratings, setRatings] = useState({});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         fetchGrounds();
@@ -17,11 +18,18 @@ function Home() {
 
     const fetchGrounds = async () => {
         try {
+            setLoading(true);
+
             const response = await API.get("/grounds");
+
             setGrounds(response.data.grounds);
-            fetchRatings(response.data.grounds);
+
+            await fetchRatings(response.data.grounds);
+
         } catch (error) {
             console.error("Error fetching grounds:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -118,9 +126,22 @@ function Home() {
                         </button>
                     </div>
 
-                    {filteredGrounds.length === 0 ? (
-                        <div className="text-center bg-white p-8 sm:p-10 rounded-2xl shadow">
-                            <h3 className="text-lg sm:text-xl font-semibold text-slate-700">
+                    {loading ? (
+                        <div className="flex flex-col items-center justify-center py-24">
+                            <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+
+                            <p className="mt-5 text-slate-600 font-medium">
+                                Loading sports grounds...
+                            </p>
+
+                            <p className="text-sm text-slate-500 mt-2">
+                                Our server is starting on free hosting.
+                                This may take 20–30 seconds.
+                            </p>
+                        </div>
+                    ) : filteredGrounds.length === 0 ? (
+                        <div className="text-center bg-white p-8 rounded-2xl shadow">
+                            <h3 className="text-xl font-semibold text-slate-700">
                                 No grounds available
                             </h3>
                         </div>
