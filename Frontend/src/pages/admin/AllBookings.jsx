@@ -143,7 +143,7 @@ function AllBookings() {
                                             <div className="flex justify-between gap-4 py-2 border-b border-slate-200">
                                                 <span className="text-slate-500">Time</span>
                                                 <span className="font-semibold text-slate-800">
-                                                    {booking.startTime} - {booking.endTime}
+                                                    {booking.startTime}
                                                 </span>
                                             </div>
 
