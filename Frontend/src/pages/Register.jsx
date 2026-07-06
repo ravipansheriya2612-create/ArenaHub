@@ -117,13 +117,62 @@ function Register() {
                             type="submit"
                             disabled={loading}
                             className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
-                                    ? "bg-green-400 cursor-not-allowed text-white"
-                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                ? "bg-green-400 cursor-not-allowed text-white"
+                                : "bg-green-600 hover:bg-green-700 text-white"
                                 }`}
                         >
                             {loading ? "Creating Account..." : "Create Account"}
                         </button>
                     </form>
+
+                    <div className="mt-6 bg-yellow-50 border border-yellow-300 rounded-xl p-5">
+                        <h3 className="text-lg font-bold text-yellow-800 text-center">
+                            Already Want to Explore?
+                        </h3>
+
+                        <p className="text-sm text-slate-600 text-center mt-2 mb-4">
+                            No need to create a new account. Use our demo accounts to explore the application instantly.
+                        </p>
+
+                        <div className="space-y-4">
+
+                            <div className="bg-white rounded-lg p-3">
+                                <p className="font-semibold text-blue-600">
+                                    👤 Demo User
+                                </p>
+
+                                <p className="text-sm mt-1">
+                                    Email: demo@arenahub.com
+                                </p>
+
+                                <p className="text-sm">
+                                    Password: Demo@123
+                                </p>
+                            </div>
+
+                            <div className="bg-white rounded-lg p-3">
+                                <p className="font-semibold text-green-700">
+                                    👨‍💼 Demo Admin
+                                </p>
+
+                                <p className="text-sm mt-1">
+                                    Email: admin@arenahub.com
+                                </p>
+
+                                <p className="text-sm">
+                                    Password: Admin@123
+                                </p>
+                            </div>
+
+                        </div>
+
+                        <Link
+                            to="/login"
+                            className="block mt-5 text-center bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold transition"
+                        >
+                            Login with Demo Account
+                        </Link>
+                    </div>
 
                     <p className="text-center text-slate-500 mt-6 text-sm sm:text-base">
                         Already have an account?
