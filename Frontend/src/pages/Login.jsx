@@ -54,8 +54,8 @@ function Login() {
             <Navbar />
 
             <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 flex items-center justify-center">
-                <div className="w-full max-w-sm sm:max-w-md md:max-w-lg bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8">
-                    <div className="text-center mb-6 sm:mb-8">
+                <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
+                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8">                    <div className="text-center mb-6 sm:mb-8">
                         <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800">
                             Welcome Back
                         </h1>
@@ -65,121 +65,90 @@ function Login() {
                         </p>
                     </div>
 
-                    <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
-                        <div>
-                            <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
-                                Email Address
-                            </label>
+                        <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+                            <div>
+                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                    Email Address
+                                </label>
 
-                            <input
-                                type="email"
-                                placeholder="Enter your email"
-                                onChange={(e) => setEmail(e.target.value)}
-                                className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                                required
-                            />
-                        </div>
+                                <input
+                                    type="email"
+                                    placeholder="Enter your email"
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    required
+                                />
+                            </div>
 
-                        <div>
-                            <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
-                                Password
-                            </label>
+                            <div>
+                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                    Password
+                                </label>
 
-                            <input
-                                type="password"
-                                placeholder="Enter your password"
-                                onChange={(e) => setPassword(e.target.value)}
-                                className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
-                                required
-                            />
-                        </div>
+                                <input
+                                    type="password"
+                                    placeholder="Enter your password"
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    required
+                                />
+                            </div>
 
-                        <button
-                            type="submit"
-                            disabled={loading}
-                            className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
-                                ? "bg-green-400 cursor-not-allowed"
-                                : "bg-green-600 hover:bg-green-700 text-white"
-                                }`}
-                        >
-                            {loading ? "Logging in..." : "Login"}
-                        </button>
-                    </form>
+                            <button
+                                type="submit"
+                                disabled={loading}
+                                className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
+                                    ? "bg-green-400 cursor-not-allowed"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                    }`}
+                            >
+                                {loading ? "Logging in..." : "Login"}
+                            </button>
+                        </form>
 
-                    <div className="mt-6 bg-slate-100 rounded-xl p-5 border border-slate-200">
-                        <h3 className="text-center text-lg font-bold text-slate-800 mb-4">
-                            Demo Credentials
-                        </h3>
+                        <div className="bg-slate-900 text-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col justify-center">
+                            <h2 className="text-3xl font-bold text-green-400 text-center">
+                                Demo Credentials
+                            </h2>
 
-                        {/* User */}
-                        <div className="mb-5">
-                            <p className="font-semibold text-blue-600 mb-2">
-                                👤 Demo User
+                            <p className="text-slate-300 text-center mt-3 mb-6">
+                                HR or interviewer can use these accounts to explore ArenaHub.
                             </p>
 
-                            <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2 mb-2">
-                                <span className="text-sm break-all">
-                                    demo@arenahub.com
-                                </span>
+                            <div className="space-y-5">
+                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
+                                    <h3 className="font-bold text-blue-300 mb-2">👤 Demo User</h3>
+                                    <p className="text-sm break-all">Email: demo@arenahub.com</p>
+                                    <p className="text-sm mt-1">Password: Demo@123</p>
 
-                                <button
-                                    type="button"
-                                    onClick={() => copyToClipboard("demo@arenahub.com")}
-                                    className="text-green-600 font-semibold hover:underline"
-                                >
-                                    Copy
-                                </button>
-                            </div>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail("demo@arenahub.com");
+                                            setPassword("Demo@123");
+                                        }}
+                                        className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold"
+                                    >
+                                        Fill User Login
+                                    </button>
+                                </div>
 
-                            <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
-                                <span className="text-sm">
-                                    Demo@123
-                                </span>
+                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
+                                    <h3 className="font-bold text-green-300 mb-2">👨‍💼 Demo Admin</h3>
+                                    <p className="text-sm break-all">Email: admin@arenahub.com</p>
+                                    <p className="text-sm mt-1">Password: Admin@123</p>
 
-                                <button
-                                    type="button"
-                                    onClick={() => copyToClipboard("Demo@123")}
-                                    className="text-green-600 font-semibold hover:underline"
-                                >
-                                    Copy
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Admin */}
-                        <div>
-                            <p className="font-semibold text-green-700 mb-2">
-                                👨‍💼 Demo Admin
-                            </p>
-
-                            <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2 mb-2">
-                                <span className="text-sm break-all">
-                                    admin@arenahub.com
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={() => copyToClipboard("admin@arenahub.com")}
-                                    className="text-green-600 font-semibold hover:underline"
-                                >
-                                    Copy
-                                </button>
-                            </div>
-
-                            <div className="flex justify-between items-center bg-white rounded-lg px-3 py-2">
-                                <span className="text-sm">
-                                    Admin@123
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        setEmail("admin@arenahub.com");
-                                        setPassword("Admin@123");
-                                    }}
-                                >
-                                    Fill
-                                </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setEmail("admin@arenahub.com");
+                                            setPassword("Admin@123");
+                                        }}
+                                        className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
+                                    >
+                                        Fill Admin Login
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
