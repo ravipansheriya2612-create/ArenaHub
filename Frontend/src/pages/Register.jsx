@@ -43,73 +43,80 @@ function Register() {
         <>
             <Navbar />
 
-            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 flex items-center justify-center">
-                <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8">
-                        <div className="text-center mb-6 sm:mb-8">
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800">
+            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-10 py-8 flex items-center justify-center">
+                <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                    {/* Left Side - Register Form */}
+                    <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800">
                                 Create Account
                             </h1>
 
-                            <p className="text-slate-500 mt-2 text-sm sm:text-base">
+                            <p className="text-slate-500 mt-2">
                                 Join ArenaHub and start booking grounds.
                             </p>
                         </div>
 
-                        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+                        <form onSubmit={handleSubmit} className="space-y-5">
+
                             <div>
-                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                <label className="block mb-2 font-medium text-slate-700">
                                     Full Name
                                 </label>
 
                                 <input
                                     type="text"
                                     placeholder="Enter your name"
+                                    value={formData.name}
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
                                             name: e.target.value,
                                         })
                                     }
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                <label className="block mb-2 font-medium text-slate-700">
                                     Email Address
                                 </label>
 
                                 <input
                                     type="email"
                                     placeholder="Enter your email"
+                                    value={formData.email}
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
                                             email: e.target.value,
                                         })
                                     }
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                <label className="block mb-2 font-medium text-slate-700">
                                     Password
                                 </label>
 
                                 <input
                                     type="password"
                                     placeholder="Create password"
+                                    value={formData.password}
                                     onChange={(e) =>
                                         setFormData({
                                             ...formData,
                                             password: e.target.value,
                                         })
                                     }
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-green-500 focus:outline-none"
                                     required
                                 />
                             </div>
@@ -117,62 +124,97 @@ function Register() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
-                                    ? "bg-green-400 cursor-not-allowed text-white"
-                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                className={`w-full py-3 rounded-lg font-semibold transition ${loading
+                                        ? "bg-green-400 cursor-not-allowed text-white"
+                                        : "bg-green-600 hover:bg-green-700 text-white"
                                     }`}
                             >
-                                {loading ? "Creating Account..." : "Create Account"}
+                                {loading
+                                    ? "Creating Account..."
+                                    : "Create Account"}
                             </button>
+
                         </form>
 
-                        <div className="bg-slate-900 text-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col justify-center">
-                            <h2 className="text-3xl font-bold text-green-400 text-center">
-                                Want to Explore First?
-                            </h2>
-
-                            <p className="text-slate-300 text-center mt-3 mb-6">
-                                No need to create a new account. Use demo accounts to check user and admin features.
-                            </p>
-
-                            <div className="space-y-5">
-                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
-                                    <h3 className="font-bold text-blue-300 mb-2">👤 Demo User</h3>
-                                    <p className="text-sm break-all">Email: demo@arenahub.com</p>
-                                    <p className="text-sm mt-1">Password: Demo@123</p>
-                                </div>
-
-                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
-                                    <h3 className="font-bold text-green-300 mb-2">👨‍💼 Demo Admin</h3>
-                                    <p className="text-sm break-all">Email: admin@arenahub.com</p>
-                                    <p className="text-sm mt-1">Password: Admin@123</p>
-                                </div>
-                            </div>
+                        <p className="text-center text-slate-500 mt-6">
+                            Already have an account?
 
                             <Link
                                 to="/login"
-                                className="mt-6 text-center bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl font-bold transition"
+                                className="text-green-600 font-semibold ml-1 hover:underline"
                             >
-                                Go to Demo Login
+                                Login
                             </Link>
-                        </div>
+                        </p>
+
                     </div>
 
-                    <p className="text-center text-slate-500 mt-6 text-sm sm:text-base">
-                        Already have an account?
+                    {/* Right Side - Demo Card */}
+
+                    <div className="bg-slate-900 text-white rounded-2xl shadow-xl p-8 flex flex-col justify-center">
+
+                        <h2 className="text-3xl font-bold text-green-400 text-center">
+                            Want to Explore ArenaHub?
+                        </h2>
+
+                        <p className="text-slate-300 text-center mt-3 mb-8">
+                            Skip registration and use our demo accounts to explore
+                            the complete application.
+                        </p>
+
+                        <div className="space-y-5">
+
+                            <div className="bg-white/10 rounded-xl p-5 border border-white/10">
+                                <h3 className="font-bold text-blue-300 text-lg mb-3">
+                                    👤 Demo User
+                                </h3>
+
+                                <p className="text-sm break-all">
+                                    <span className="font-semibold">Email:</span>{" "}
+                                    demo@arenahub.com
+                                </p>
+
+                                <p className="text-sm mt-2">
+                                    <span className="font-semibold">
+                                        Password:
+                                    </span>{" "}
+                                    Demo@123
+                                </p>
+                            </div>
+
+                            <div className="bg-white/10 rounded-xl p-5 border border-white/10">
+                                <h3 className="font-bold text-green-300 text-lg mb-3">
+                                    👨‍💼 Demo Admin
+                                </h3>
+
+                                <p className="text-sm break-all">
+                                    <span className="font-semibold">Email:</span>{" "}
+                                    admin@arenahub.com
+                                </p>
+
+                                <p className="text-sm mt-2">
+                                    <span className="font-semibold">
+                                        Password:
+                                    </span>{" "}
+                                    Admin@123
+                                </p>
+                            </div>
+
+                        </div>
 
                         <Link
                             to="/login"
-                            className="text-green-600 font-semibold ml-1 hover:underline"
+                            className="mt-8 bg-green-600 hover:bg-green-700 text-center py-3 rounded-xl font-bold transition"
                         >
-                            Login
+                            Login Using Demo Account
                         </Link>
-                    </p>
+
+                    </div>
+
                 </div>
             </section>
 
             <Footer />
-
         </>
     );
 

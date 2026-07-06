@@ -53,43 +53,50 @@ function Login() {
         <>
             <Navbar />
 
-            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-10 py-8 sm:py-10 flex items-center justify-center">
-                <div className="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-                    <div className="bg-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8">                    <div className="text-center mb-6 sm:mb-8">
-                        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-slate-800">
-                            Welcome Back
-                        </h1>
+            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-10 py-8 flex items-center justify-center">
+                <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                        <p className="text-slate-500 mt-2 text-sm sm:text-base">
-                            Login to continue booking your favorite grounds.
-                        </p>
-                    </div>
+                    {/* Left Side - Login Form */}
+                    <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
 
-                        <form onSubmit={handleLogin} className="space-y-4 sm:space-y-5">
+                        <div className="text-center mb-8">
+                            <h1 className="text-3xl sm:text-4xl font-bold text-slate-800">
+                                Welcome Back
+                            </h1>
+
+                            <p className="text-slate-500 mt-2">
+                                Login to continue booking your favorite grounds.
+                            </p>
+                        </div>
+
+                        <form onSubmit={handleLogin} className="space-y-5">
+
                             <div>
-                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                <label className="block mb-2 font-medium text-slate-700">
                                     Email Address
                                 </label>
 
                                 <input
                                     type="email"
-                                    placeholder="Enter your email"
+                                    value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    placeholder="Enter your email"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block mb-2 text-sm sm:text-base font-medium text-slate-700">
+                                <label className="block mb-2 font-medium text-slate-700">
                                     Password
                                 </label>
 
                                 <input
                                     type="password"
-                                    placeholder="Enter your password"
+                                    value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-green-500"
+                                    placeholder="Enter your password"
+                                    className="w-full border border-slate-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-green-500"
                                     required
                                 />
                             </div>
@@ -97,29 +104,62 @@ function Login() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className={`w-full py-3 rounded-lg font-semibold text-sm sm:text-base transition ${loading
-                                    ? "bg-green-400 cursor-not-allowed"
-                                    : "bg-green-600 hover:bg-green-700 text-white"
+                                className={`w-full py-3 rounded-lg font-semibold transition ${loading
+                                        ? "bg-green-400 cursor-not-allowed text-white"
+                                        : "bg-green-600 hover:bg-green-700 text-white"
                                     }`}
                             >
                                 {loading ? "Logging in..." : "Login"}
                             </button>
+
                         </form>
 
-                        <div className="bg-slate-900 text-white rounded-xl sm:rounded-2xl shadow-xl p-5 sm:p-7 md:p-8 flex flex-col justify-center">
-                            <h2 className="text-3xl font-bold text-green-400 text-center">
-                                Demo Credentials
-                            </h2>
+                        <p className="text-center text-slate-500 mt-6">
+                            Don't have an account?
 
-                            <p className="text-slate-300 text-center mt-3 mb-6">
-                                HR or interviewer can use these accounts to explore ArenaHub.
-                            </p>
+                            <Link
+                                to="/register"
+                                className="text-green-600 font-semibold ml-1 hover:underline"
+                            >
+                                Register
+                            </Link>
+                        </p>
 
-                            <div className="space-y-5">
-                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
-                                    <h3 className="font-bold text-blue-300 mb-2">👤 Demo User</h3>
-                                    <p className="text-sm break-all">Email: demo@arenahub.com</p>
-                                    <p className="text-sm mt-1">Password: Demo@123</p>
+                    </div>
+
+                    {/* Right Side - Demo Card */}
+
+                    <div className="bg-slate-900 text-white rounded-2xl shadow-xl p-8 flex flex-col justify-center">
+
+                        <h2 className="text-3xl font-bold text-green-400 text-center">
+                            Demo Credentials
+                        </h2>
+
+                        <p className="text-slate-300 text-center mt-3 mb-8">
+                            HRs and interviewers can explore the complete ArenaHub application using these demo accounts.
+                        </p>
+
+                        <div className="space-y-6">
+
+                            {/* Demo User */}
+
+                            <div className="bg-white/10 border border-white/10 rounded-xl p-5">
+
+                                <h3 className="text-lg font-bold text-blue-300 mb-3">
+                                    👤 Demo User
+                                </h3>
+
+                                <p className="text-sm break-all">
+                                    <span className="font-semibold">Email:</span>{" "}
+                                    demo@arenahub.com
+                                </p>
+
+                                <p className="text-sm mt-2">
+                                    <span className="font-semibold">Password:</span>{" "}
+                                    Demo@123
+                                </p>
+
+                                <div className="grid grid-cols-2 gap-3 mt-5">
 
                                     <button
                                         type="button"
@@ -127,16 +167,44 @@ function Login() {
                                             setEmail("demo@arenahub.com");
                                             setPassword("Demo@123");
                                         }}
-                                        className="mt-3 w-full bg-blue-500 hover:bg-blue-600 text-white py-2 rounded-lg font-semibold"
+                                        className="bg-blue-500 hover:bg-blue-600 py-2 rounded-lg font-semibold"
                                     >
-                                        Fill User Login
+                                        Fill
                                     </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            copyToClipboard("demo@arenahub.com")
+                                        }
+                                        className="bg-slate-700 hover:bg-slate-600 py-2 rounded-lg font-semibold"
+                                    >
+                                        Copy Email
+                                    </button>
+
                                 </div>
 
-                                <div className="bg-white/10 border border-white/10 rounded-xl p-4">
-                                    <h3 className="font-bold text-green-300 mb-2">👨‍💼 Demo Admin</h3>
-                                    <p className="text-sm break-all">Email: admin@arenahub.com</p>
-                                    <p className="text-sm mt-1">Password: Admin@123</p>
+                            </div>
+
+                            {/* Demo Admin */}
+
+                            <div className="bg-white/10 border border-white/10 rounded-xl p-5">
+
+                                <h3 className="text-lg font-bold text-green-300 mb-3">
+                                    👨‍💼 Demo Admin
+                                </h3>
+
+                                <p className="text-sm break-all">
+                                    <span className="font-semibold">Email:</span>{" "}
+                                    admin@arenahub.com
+                                </p>
+
+                                <p className="text-sm mt-2">
+                                    <span className="font-semibold">Password:</span>{" "}
+                                    Admin@123
+                                </p>
+
+                                <div className="grid grid-cols-2 gap-3 mt-5">
 
                                     <button
                                         type="button"
@@ -144,30 +212,33 @@ function Login() {
                                             setEmail("admin@arenahub.com");
                                             setPassword("Admin@123");
                                         }}
-                                        className="mt-3 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-semibold"
+                                        className="bg-green-600 hover:bg-green-700 py-2 rounded-lg font-semibold"
                                     >
-                                        Fill Admin Login
+                                        Fill
                                     </button>
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            copyToClipboard("admin@arenahub.com")
+                                        }
+                                        className="bg-slate-700 hover:bg-slate-600 py-2 rounded-lg font-semibold"
+                                    >
+                                        Copy Email
+                                    </button>
+
                                 </div>
+
                             </div>
+
                         </div>
+
                     </div>
 
-                    <p className="text-center text-slate-500 mt-6 text-sm sm:text-base">
-                        Don't have an account?
-
-                        <Link
-                            to="/register"
-                            className="text-green-600 font-semibold ml-1 hover:underline"
-                        >
-                            Register
-                        </Link>
-                    </p>
                 </div>
             </section>
 
             <Footer />
-
         </>
     );
 
