@@ -340,9 +340,9 @@ const MyBookings = () => {
                                         {/* Status */}
                                         <span
                                             className={`absolute top-4 right-4 text-xs font-bold px-3 py-2 rounded-full ${String(getBookingStatus(booking)).toLowerCase() ===
-                                                    "confirmed"
-                                                    ? "bg-green-100 text-green-700"
-                                                    : "bg-yellow-100 text-yellow-700"
+                                                "confirmed"
+                                                ? "bg-green-100 text-green-700"
+                                                : "bg-yellow-100 text-yellow-700"
                                                 }`}
                                         >
                                             {String(getBookingStatus(booking)).toUpperCase()}
