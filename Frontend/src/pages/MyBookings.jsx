@@ -26,20 +26,20 @@ function MyBookings() {
 
             const res = await API.get("/bookings/my-bookings", {
                 headers: {
-                    Authorization: `Bearer ${token} `,
+                    Authorization: `Bearer ${ token } `,
                 },
             });
 
             const fetchedBookings = res.data.bookings || [];
 
             // Latest booking first
-            const sortedBookings = fetchedBookings.sort((a, b) => {
+            const sortedBookings = [...fetchedBookings].sort((a, b) => {
                 const dateA = new Date(
-                    `${a.bookingDate} ${a.startTime || "00:00"} `
+                    `${ a.bookingDate } ${ a.startTime || "00:00" } `
                 );
 
                 const dateB = new Date(
-                    `${b.bookingDate} ${b.startTime || "00:00"} `
+                    `${ b.bookingDate } ${ b.startTime || "00:00" } `
                 );
 
                 return dateB - dateA;
@@ -50,9 +50,6 @@ function MyBookings() {
             console.log(error);
 
             if (error.response?.status === 401) {
-                localStorage.removeItem("token");
-                localStorage.removeItem("user");
-
                 toast.error("Session expired. Please login again.");
             } else {
                 toast.error("Unable to load your bookings.");
@@ -78,11 +75,11 @@ function MyBookings() {
             }
 
             await API.put(
-                `/ bookings / cancel / ${id} `,
+                `/ bookings / cancel / ${ id } `,
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${token} `,
+                        Authorization: `Bearer ${ token } `,
                     },
                 }
             );
@@ -95,11 +92,12 @@ function MyBookings() {
 
             toast.error(
                 error.response?.data?.message ||
-                "Unable to cancel booking."
+                "Cancel booking failed."
             );
         }
     };
 
+    // Only active bookings
     const activeBookings = bookings.filter(
         (booking) =>
             booking.status !== "cancelled" &&
@@ -110,14 +108,14 @@ function MyBookings() {
         <>
             <Navbar />
 
-            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-10 sm:py-12">
+            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-10">
                 <div className="max-w-7xl mx-auto">
 
-                    {/* Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+                    {/* Page Header */}
+                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
 
                         <div>
-                            <p className="text-green-600 font-semibold uppercase tracking-wider text-sm">
+                            <p className="text-green-600 font-bold text-sm uppercase tracking-widest">
                                 ArenaHub
                             </p>
 
@@ -126,23 +124,21 @@ function MyBookings() {
                             </h1>
 
                             <p className="text-slate-500 mt-2">
-                                Manage your upcoming and recent ground bookings.
+                                View and manage all your sports ground bookings.
                             </p>
                         </div>
 
-                        {!loading && activeBookings.length > 0 && (
-                            <Link
-                                to="/"
-                                className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold transition"
-                            >
-                                + Book Another Ground
-                            </Link>
-                        )}
+                        <Link
+                            to="/"
+                            className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-bold transition shadow-sm"
+                        >
+                            + Book Another Ground
+                        </Link>
                     </div>
 
                     {/* Loading */}
                     {loading ? (
-                        <div className="flex flex-col items-center justify-center py-28">
+                        <div className="bg-white rounded-3xl shadow-md border border-slate-200 py-24 flex flex-col items-center justify-center">
 
                             <div className="w-14 h-14 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
 
@@ -150,197 +146,232 @@ function MyBookings() {
                                 Loading your bookings...
                             </p>
 
-                            <p className="text-sm text-slate-500 mt-2 text-center">
-                                Please wait while we retrieve your booking details.
+                            <p className="text-sm text-slate-500 mt-2">
+                                Fetching your latest booking details.
                             </p>
                         </div>
                     ) : activeBookings.length === 0 ? (
 
                         /* Empty State */
-                        <div className="bg-white rounded-3xl shadow-lg border border-slate-200 px-6 py-16 sm:px-10 text-center">
+                        <div className="bg-white rounded-3xl shadow-md border border-slate-200 py-20 px-6 text-center">
 
-                            <div className="w-20 h-20 mx-auto rounded-full bg-green-100 flex items-center justify-center text-4xl">
+                            <div className="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-5xl">
                                 🏟️
                             </div>
 
-                            <h2 className="text-2xl sm:text-3xl font-bold text-slate-800 mt-6">
-                                No bookings yet
+                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-6">
+                                No bookings found
                             </h2>
 
-                            <p className="text-slate-500 max-w-lg mx-auto mt-3 leading-relaxed">
-                                You don't have any active bookings right now.
-                                Explore available sports grounds and book your
-                                next game in just a few clicks.
+                            <p className="max-w-xl mx-auto text-slate-500 mt-3 leading-relaxed">
+                                You haven't booked any sports ground yet.
+                                Explore available grounds, choose your preferred
+                                date and time, and make your first booking.
                             </p>
 
                             <Link
                                 to="/"
-                                className="inline-flex items-center justify-center mt-7 bg-green-600 hover:bg-green-700 text-white px-7 py-3.5 rounded-xl font-bold transition shadow-md hover:shadow-lg"
+                                className="inline-flex mt-7 bg-green-600 hover:bg-green-700 text-white px-7 py-3.5 rounded-xl font-bold transition shadow-md"
                             >
                                 Explore Sports Grounds
                             </Link>
-
-                            <p className="text-xs text-slate-400 mt-5">
-                                Find football, cricket, badminton and other
-                                sports grounds near you.
-                            </p>
                         </div>
 
                     ) : (
 
-                        /* Booking List */
+                        /* Bookings */
                         <div className="space-y-6">
 
-                            {/* Latest Booking */}
-                            <div className="bg-green-50 border border-green-200 rounded-2xl px-5 py-4 flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center">
-                                    ✓
-                                </div>
+                            {/* Booking Count */}
+                            <div className="flex items-center justify-between bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
 
                                 <div>
-                                    <p className="font-bold text-green-800">
-                                        Your latest booking
+                                    <p className="text-sm text-slate-500">
+                                        Active Bookings
                                     </p>
 
-                                    <p className="text-sm text-green-700">
-                                        Your most recently booked ground is shown first.
+                                    <p className="text-2xl font-extrabold text-slate-800">
+                                        {activeBookings.length}
+                                    </p>
+                                </div>
+
+                                <div className="text-right">
+                                    <p className="text-sm text-slate-500">
+                                        Latest booking
+                                    </p>
+
+                                    <p className="font-bold text-green-600">
+                                        {activeBookings[0]?.ground?.name}
                                     </p>
                                 </div>
                             </div>
 
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Booking Cards */}
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
 
-                                {activeBookings.map((booking, index) => (
+                                {activeBookings.map((booking, index) => {
 
-                                    <div
-                                        key={booking._id}
-                                        className={`bg - white rounded - 3xl overflow - hidden shadow - md hover: shadow - xl transition duration - 300 border ${index === 0
-                                                ? "border-green-300 ring-2 ring-green-100"
-                                                : "border-slate-200"
-                                            } `}
-                                    >
+                                    const isLatest = index === 0;
 
-                                        {/* Latest Badge */}
-                                        {index === 0 && (
-                                            <div className="bg-green-600 text-white text-center py-2 text-sm font-bold">
-                                                ⭐ Latest Booking
-                                            </div>
-                                        )}
+                                    return (
+                                        <div
+                                            key={booking._id}
+                                            className={`bg - white rounded - 3xl overflow - hidden border shadow - md hover: shadow - xl transition duration - 300 ${
+    isLatest
+        ? "border-green-300 ring-2 ring-green-100"
+        : "border-slate-200"
+} `}
+                                        >
 
-                                        {/* Ground Image */}
-                                        <div className="relative h-52 bg-slate-200">
+                                            {/* Latest Booking */}
+                                            {isLatest && (
+                                                <div className="bg-green-600 text-white text-center py-2.5 text-sm font-bold tracking-wide">
+                                                    ⭐ Latest Booking
+                                                </div>
+                                            )}
 
-                                            {booking.ground?.image ? (
-                                                <img
-                                                    src={booking.ground.image}
-                                                    alt={booking.ground.name}
-                                                    className="w-full h-full object-cover"
-                                                />
-                                            ) : (
-                                                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                                    <span className="text-5xl">
-                                                        🏟️
+                                            {/* Ground Image */}
+                                            <div className="relative h-60 bg-slate-200">
+
+                                                {booking.ground?.image ? (
+                                                    <img
+                                                        src={booking.ground.image}
+                                                        alt={booking.ground.name}
+                                                        className="w-full h-full object-cover"
+                                                    />
+                                                ) : (
+                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
+                                                        <span className="text-6xl">
+                                                            🏟️
+                                                        </span>
+
+                                                        <p className="text-sm mt-2">
+                                                            Ground image unavailable
+                                                        </p>
+                                                    </div>
+                                                )}
+
+                                                {/* Booking Status */}
+                                                <div className="absolute top-4 right-4">
+                                                    <span
+                                                        className={`px - 4 py - 2 rounded - full text - xs font - bold capitalize shadow - lg ${
+    booking.status === "booked"
+        ? "bg-white text-green-700"
+        : "bg-blue-100 text-blue-700"
+} `}
+                                                    >
+                                                        {booking.status}
                                                     </span>
                                                 </div>
-                                            )}
-
-                                            {/* Booking Status */}
-                                            <span
-                                                className={`absolute top - 4 right - 4 px - 4 py - 1.5 rounded - full text - xs font - bold capitalize shadow ${booking.status === "booked"
-                                                        ? "bg-white text-green-700"
-                                                        : "bg-blue-100 text-blue-700"
-                                                    } `}
-                                            >
-                                                {booking.status}
-                                            </span>
-                                        </div>
-
-                                        {/* Content */}
-                                        <div className="p-6">
-
-                                            {/* Ground Name */}
-                                            <div className="mb-6">
-
-                                                <p className="text-xs font-bold uppercase tracking-widest text-green-600">
-                                                    {booking.ground?.sportType || "Sports Ground"}
-                                                </p>
-
-                                                <h2 className="text-2xl font-extrabold text-slate-800 mt-1">
-                                                    {booking.ground?.name}
-                                                </h2>
-
-                                                {booking.ground?.location && (
-                                                    <p className="text-sm text-slate-500 mt-1">
-                                                        📍 {booking.ground.location}
-                                                    </p>
-                                                )}
                                             </div>
 
-                                            {/* Booking Details */}
-                                            <div className="grid grid-cols-2 gap-4">
+                                            {/* Booking Information */}
+                                            <div className="p-6">
 
-                                                <div className="bg-slate-50 rounded-xl p-4">
-                                                    <p className="text-xs text-slate-500">
-                                                        Booking Date
+                                                {/* Ground Details */}
+                                                <div className="pb-5 border-b border-slate-200">
+
+                                                    <p className="text-xs uppercase tracking-widest font-bold text-green-600">
+                                                        {booking.ground?.sportType || "Sports Ground"}
                                                     </p>
 
-                                                    <p className="font-bold text-slate-800 mt-1">
-                                                        {booking.bookingDate}
-                                                    </p>
+                                                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1">
+                                                        {booking.ground?.name || "Ground Unavailable"}
+                                                    </h2>
+
+                                                    {booking.ground?.location && (
+                                                        <p className="text-sm text-slate-500 mt-2">
+                                                            📍 {booking.ground.location}
+                                                        </p>
+                                                    )}
                                                 </div>
 
-                                                <div className="bg-slate-50 rounded-xl p-4">
-                                                    <p className="text-xs text-slate-500">
-                                                        Start Time
-                                                    </p>
+                                                {/* Booking Details */}
+                                                <div className="grid grid-cols-2 gap-4 mt-5">
 
-                                                    <p className="font-bold text-slate-800 mt-1">
-                                                        {booking.startTime}
-                                                    </p>
+                                                    {/* Date */}
+                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                        <p className="text-xs font-medium text-slate-500">
+                                                            Booking Date
+                                                        </p>
+
+                                                        <p className="font-bold text-slate-800 mt-1">
+                                                            📅 {booking.bookingDate}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Time */}
+                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                        <p className="text-xs font-medium text-slate-500">
+                                                            Start Time
+                                                        </p>
+
+                                                        <p className="font-bold text-slate-800 mt-1">
+                                                            🕐 {booking.startTime}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Price */}
+                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                        <p className="text-xs font-medium text-slate-500">
+                                                            Total Amount
+                                                        </p>
+
+                                                        <p className="font-extrabold text-green-600 text-lg mt-1">
+                                                            ₹{booking.totalPrice}
+                                                        </p>
+                                                    </div>
+
+                                                    {/* Payment */}
+                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
+                                                        <p className="text-xs font-medium text-slate-500">
+                                                            Payment Status
+                                                        </p>
+
+                                                        <p
+                                                            className={`font - bold capitalize mt - 1 ${
+    booking.paymentStatus === "paid"
+        ? "text-green-600"
+        : booking.paymentStatus === "pending"
+            ? "text-orange-500"
+            : "text-slate-600"
+} `}
+                                                        >
+                                                            {booking.paymentStatus}
+                                                        </p>
+                                                    </div>
+
                                                 </div>
 
-                                                <div className="bg-slate-50 rounded-xl p-4">
-                                                    <p className="text-xs text-slate-500">
-                                                        Total Price
-                                                    </p>
+                                                {/* Booking ID */}
+                                                <div className="mt-5 bg-slate-50 rounded-xl px-4 py-3 flex justify-between items-center">
+                                                    <span className="text-xs text-slate-500">
+                                                        Booking ID
+                                                    </span>
 
-                                                    <p className="font-extrabold text-green-600 mt-1 text-lg">
-                                                        ₹{booking.totalPrice}
-                                                    </p>
+                                                    <span className="text-xs font-mono font-semibold text-slate-700">
+                                                        {booking._id}
+                                                    </span>
                                                 </div>
 
-                                                <div className="bg-slate-50 rounded-xl p-4">
-                                                    <p className="text-xs text-slate-500">
-                                                        Payment
-                                                    </p>
-
-                                                    <p
-                                                        className={`font - bold capitalize mt - 1 ${booking.paymentStatus === "paid"
-                                                                ? "text-green-600"
-                                                                : "text-orange-500"
-                                                            } `}
+                                                {/* Cancel */}
+                                                {booking.status === "booked" && (
+                                                    <button
+                                                        onClick={() =>
+                                                            cancelBooking(
+                                                                booking._id
+                                                            )
+                                                        }
+                                                        className="w-full mt-5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 py-3 rounded-xl font-bold transition"
                                                     >
-                                                        {booking.paymentStatus}
-                                                    </p>
-                                                </div>
+                                                        Cancel Booking
+                                                    </button>
+                                                )}
 
                                             </div>
-
-                                            {/* Actions */}
-                                            {booking.status === "booked" && (
-                                                <button
-                                                    onClick={() =>
-                                                        cancelBooking(booking._id)
-                                                    }
-                                                    className="w-full mt-6 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 py-3 rounded-xl font-bold transition"
-                                                >
-                                                    Cancel Booking
-                                                </button>
-                                            )}
-
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
