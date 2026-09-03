@@ -24,14 +24,31 @@ export const registerUser = async (req, res) => {
             role: "user",
         });
 
+        // Generate JWT token
+        const token = jwt.sign(
+            {
+                id: newUser._id,
+                email: newUser.email,
+            },
+            process.env.JWT_SECRET,
+            {
+                expiresIn: "7d",
+            }
+        );
+
         res.status(201).json({
             success: true,
             message: "User registered successfully",
-            user: newUser,
+            token,
+            user: {
+                _id: newUser._id,
+                name: newUser.name,
+                email: newUser.email,
+                role: newUser.role,
+            },
         });
 
-    }
-    catch (error) {
+    } catch (error) {
         res.status(500).json({
             success: false,
             message: "Error registering user",
