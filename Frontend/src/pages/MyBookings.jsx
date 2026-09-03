@@ -132,7 +132,7 @@ function MyBookings() {
 
                         {!loading && activeBookings.length > 0 && (
                             <Link
-                                to="/grounds"
+                                to="/"
                                 className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-semibold transition"
                             >
                                 + Book Another Ground
@@ -174,7 +174,7 @@ function MyBookings() {
                             </p>
 
                             <Link
-                                to="/grounds"
+                                to="/"
                                 className="inline-flex items-center justify-center mt-7 bg-green-600 hover:bg-green-700 text-white px-7 py-3.5 rounded-xl font-bold transition shadow-md hover:shadow-lg"
                             >
                                 Explore Sports Grounds
