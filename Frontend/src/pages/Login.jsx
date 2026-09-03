@@ -30,20 +30,34 @@ function Login() {
 
         try {
             const res = await API.post("/auth/login", {
-                email,
+                email: email.trim().toLowerCase(),
                 password,
             });
+
+            console.log("LOGIN RESPONSE:", res.data);
+            console.log("TOKEN:", res.data?.token);
+
+            if (!res.data?.token) {
+                toast.error("Login failed: Token not received");
+                console.error("JWT token missing from login response");
+                return;
+            }
 
             localStorage.setItem("token", res.data.token);
             localStorage.setItem("user", JSON.stringify(res.data.user));
 
+            console.log("TOKEN STORED:", localStorage.getItem("token"));
+
             toast.success("Login Successful");
 
             navigate(redirectPath);
-
         } catch (error) {
-            console.log(error);
-            toast.error("Login Failed");
+            console.log("Login Status:", error.response?.status);
+            console.log("Login Response:", error.response?.data);
+
+            toast.error(
+                error.response?.data?.message || "Login Failed"
+            );
         } finally {
             setLoading(false);
         }
@@ -105,8 +119,8 @@ function Login() {
                                 type="submit"
                                 disabled={loading}
                                 className={`w-full py-3 rounded-lg font-semibold transition ${loading
-                                        ? "bg-green-400 cursor-not-allowed text-white"
-                                        : "bg-green-600 hover:bg-green-700 text-white"
+                                    ? "bg-green-400 cursor-not-allowed text-white"
+                                    : "bg-green-600 hover:bg-green-700 text-white"
                                     }`}
                             >
                                 {loading ? "Logging in..." : "Login"}
