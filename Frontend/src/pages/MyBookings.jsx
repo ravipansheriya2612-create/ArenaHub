@@ -1,17 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import API from "../services/api";
+import API from "../api/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import toast from "react-hot-toast";
+import { toast } from "react-toastify";
 
-function MyBookings() {
+const MyBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchBookings();
-    }, []);
+    const [cancellingId, setCancellingId] = useState(null);
 
     const fetchBookings = async () => {
         try {
@@ -26,361 +23,456 @@ function MyBookings() {
 
             const res = await API.get("/bookings/my-bookings", {
                 headers: {
-                    Authorization: `Bearer ${ token } `,
+                    Authorization: `Bearer ${token}`,
                 },
             });
 
-            const fetchedBookings = res.data.bookings || [];
+            console.log("MY BOOKINGS RESPONSE:", res.data);
+
+            const fetchedBookings = res.data?.bookings || [];
 
             // Latest booking first
             const sortedBookings = [...fetchedBookings].sort((a, b) => {
                 const dateA = new Date(
-                    `${ a.bookingDate } ${ a.startTime || "00:00" } `
+                    `${a.bookingDate || ""} ${a.startTime || "00:00"}`
                 );
 
                 const dateB = new Date(
-                    `${ b.bookingDate } ${ b.startTime || "00:00" } `
+                    `${b.bookingDate || ""} ${b.startTime || "00:00"}`
                 );
 
                 return dateB - dateA;
             });
 
             setBookings(sortedBookings);
+
         } catch (error) {
-            console.log(error);
+            console.error(
+                "FETCH BOOKINGS ERROR:",
+                error.response?.data || error
+            );
 
             if (error.response?.status === 401) {
                 toast.error("Session expired. Please login again.");
             } else {
-                toast.error("Unable to load your bookings.");
+                toast.error(
+                    error.response?.data?.message ||
+                    "Failed to load bookings"
+                );
             }
+
+            setBookings([]);
         } finally {
             setLoading(false);
         }
     };
 
-    const cancelBooking = async (id) => {
-        const confirmCancel = window.confirm(
+    useEffect(() => {
+        fetchBookings();
+    }, []);
+
+    const cancelBooking = async (bookingId) => {
+        const confirmed = window.confirm(
             "Are you sure you want to cancel this booking?"
         );
 
-        if (!confirmCancel) return;
+        if (!confirmed) return;
 
         try {
+            setCancellingId(bookingId);
+
             const token = localStorage.getItem("token");
 
-            if (!token || token === "undefined") {
-                toast.error("Please login again.");
-                return;
-            }
-
             await API.put(
-                `/ bookings / cancel / ${ id } `,
+                `/bookings/cancel/${bookingId}`,
                 {},
                 {
                     headers: {
-                        Authorization: `Bearer ${ token } `,
+                        Authorization: `Bearer ${token}`,
                     },
                 }
             );
 
-            toast.success("Booking cancelled successfully.");
+            toast.success("Booking cancelled successfully");
 
-            fetchBookings();
+            await fetchBookings();
+
         } catch (error) {
-            console.log(error);
+            console.error(
+                "CANCEL BOOKING ERROR:",
+                error.response?.data || error
+            );
 
             toast.error(
                 error.response?.data?.message ||
-                "Cancel booking failed."
+                "Failed to cancel booking"
             );
+        } finally {
+            setCancellingId(null);
         }
     };
 
-    // Only active bookings
+    // Do NOT require booking.ground here.
+    // The backend response should still be displayed.
     const activeBookings = bookings.filter(
         (booking) =>
-            booking.status !== "cancelled" &&
-            booking.ground
+            String(booking.status || "").toLowerCase() !== "cancelled"
     );
+
+    const latestBooking = activeBookings[0];
+
+    const getGround = (booking) => {
+        return booking?.ground || {};
+    };
+
+    const getGroundImage = (booking) => {
+        const ground = getGround(booking);
+
+        if (ground.image) return ground.image;
+
+        if (ground.imageUrl) return ground.imageUrl;
+
+        if (Array.isArray(ground.images) && ground.images.length > 0) {
+            return ground.images[0];
+        }
+
+        return "https://via.placeholder.com/800x500?text=Sports+Ground";
+    };
+
+    const formatDate = (date) => {
+        if (!date) return "Not available";
+
+        const parsedDate = new Date(date);
+
+        if (Number.isNaN(parsedDate.getTime())) {
+            return date;
+        }
+
+        return parsedDate.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+        });
+    };
+
+    const getGroundName = (booking) => {
+        const ground = getGround(booking);
+
+        return (
+            ground.name ||
+            booking.groundName ||
+            "Sports Ground"
+        );
+    };
+
+    const getSportType = (booking) => {
+        const ground = getGround(booking);
+
+        return (
+            ground.sportType ||
+            booking.sportType ||
+            "Sports"
+        );
+    };
+
+    const getLocation = (booking) => {
+        const ground = getGround(booking);
+
+        return (
+            ground.location ||
+            ground.address ||
+            booking.location ||
+            "Location not available"
+        );
+    };
+
+    const getAmount = (booking) => {
+        return (
+            booking.totalPrice ??
+            booking.totalAmount ??
+            booking.amount ??
+            0
+        );
+    };
+
+    const getPaymentStatus = (booking) => {
+        return (
+            booking.paymentStatus ||
+            booking.payment?.status ||
+            "Pending"
+        );
+    };
+
+    const getBookingStatus = (booking) => {
+        return booking.status || "confirmed";
+    };
 
     return (
-        <>
+        <div className="min-h-screen bg-slate-100">
+
             <Navbar />
 
-            <section className="min-h-screen bg-slate-100 px-4 sm:px-6 md:px-8 lg:px-12 xl:px-16 py-8 sm:py-10">
-                <div className="max-w-7xl mx-auto">
+            <main className="max-w-7xl mx-auto px-5 sm:px-6 lg:px-8 py-12">
 
-                    {/* Page Header */}
-                    <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
+                {/* Header */}
+                <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
 
-                        <div>
-                            <p className="text-green-600 font-bold text-sm uppercase tracking-widest">
-                                ArenaHub
-                            </p>
+                    <div>
+                        <p className="text-green-600 font-bold tracking-[0.2em] text-sm mb-3">
+                            ARENAHUB
+                        </p>
 
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-slate-800 mt-2">
-                                My Bookings
-                            </h1>
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900">
+                            My Bookings
+                        </h1>
 
-                            <p className="text-slate-500 mt-2">
-                                View and manage all your sports ground bookings.
-                            </p>
-                        </div>
-
-                        <Link
-                            to="/"
-                            className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white px-5 py-3 rounded-xl font-bold transition shadow-sm"
-                        >
-                            + Book Another Ground
-                        </Link>
+                        <p className="text-slate-500 mt-3 text-lg">
+                            View and manage all your sports ground bookings.
+                        </p>
                     </div>
 
-                    {/* Loading */}
-                    {loading ? (
-                        <div className="bg-white rounded-3xl shadow-md border border-slate-200 py-24 flex flex-col items-center justify-center">
-
-                            <div className="w-14 h-14 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-
-                            <p className="mt-6 text-slate-700 font-semibold text-lg">
-                                Loading your bookings...
-                            </p>
-
-                            <p className="text-sm text-slate-500 mt-2">
-                                Fetching your latest booking details.
-                            </p>
-                        </div>
-                    ) : activeBookings.length === 0 ? (
-
-                        /* Empty State */
-                        <div className="bg-white rounded-3xl shadow-md border border-slate-200 py-20 px-6 text-center">
-
-                            <div className="w-24 h-24 mx-auto rounded-full bg-green-100 flex items-center justify-center text-5xl">
-                                🏟️
-                            </div>
-
-                            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-6">
-                                No bookings found
-                            </h2>
-
-                            <p className="max-w-xl mx-auto text-slate-500 mt-3 leading-relaxed">
-                                You haven't booked any sports ground yet.
-                                Explore available grounds, choose your preferred
-                                date and time, and make your first booking.
-                            </p>
-
-                            <Link
-                                to="/"
-                                className="inline-flex mt-7 bg-green-600 hover:bg-green-700 text-white px-7 py-3.5 rounded-xl font-bold transition shadow-md"
-                            >
-                                Explore Sports Grounds
-                            </Link>
-                        </div>
-
-                    ) : (
-
-                        /* Bookings */
-                        <div className="space-y-6">
-
-                            {/* Booking Count */}
-                            <div className="flex items-center justify-between bg-white rounded-2xl border border-slate-200 shadow-sm px-5 py-4">
-
-                                <div>
-                                    <p className="text-sm text-slate-500">
-                                        Active Bookings
-                                    </p>
-
-                                    <p className="text-2xl font-extrabold text-slate-800">
-                                        {activeBookings.length}
-                                    </p>
-                                </div>
-
-                                <div className="text-right">
-                                    <p className="text-sm text-slate-500">
-                                        Latest booking
-                                    </p>
-
-                                    <p className="font-bold text-green-600">
-                                        {activeBookings[0]?.ground?.name}
-                                    </p>
-                                </div>
-                            </div>
-
-                            {/* Booking Cards */}
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
-
-                                {activeBookings.map((booking, index) => {
-
-                                    const isLatest = index === 0;
-
-                                    return (
-                                        <div
-                                            key={booking._id}
-                                            className={`bg - white rounded - 3xl overflow - hidden border shadow - md hover: shadow - xl transition duration - 300 ${
-    isLatest
-        ? "border-green-300 ring-2 ring-green-100"
-        : "border-slate-200"
-} `}
-                                        >
-
-                                            {/* Latest Booking */}
-                                            {isLatest && (
-                                                <div className="bg-green-600 text-white text-center py-2.5 text-sm font-bold tracking-wide">
-                                                    ⭐ Latest Booking
-                                                </div>
-                                            )}
-
-                                            {/* Ground Image */}
-                                            <div className="relative h-60 bg-slate-200">
-
-                                                {booking.ground?.image ? (
-                                                    <img
-                                                        src={booking.ground.image}
-                                                        alt={booking.ground.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                ) : (
-                                                    <div className="w-full h-full flex flex-col items-center justify-center text-slate-400">
-                                                        <span className="text-6xl">
-                                                            🏟️
-                                                        </span>
-
-                                                        <p className="text-sm mt-2">
-                                                            Ground image unavailable
-                                                        </p>
-                                                    </div>
-                                                )}
-
-                                                {/* Booking Status */}
-                                                <div className="absolute top-4 right-4">
-                                                    <span
-                                                        className={`px - 4 py - 2 rounded - full text - xs font - bold capitalize shadow - lg ${
-    booking.status === "booked"
-        ? "bg-white text-green-700"
-        : "bg-blue-100 text-blue-700"
-} `}
-                                                    >
-                                                        {booking.status}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            {/* Booking Information */}
-                                            <div className="p-6">
-
-                                                {/* Ground Details */}
-                                                <div className="pb-5 border-b border-slate-200">
-
-                                                    <p className="text-xs uppercase tracking-widest font-bold text-green-600">
-                                                        {booking.ground?.sportType || "Sports Ground"}
-                                                    </p>
-
-                                                    <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-800 mt-1">
-                                                        {booking.ground?.name || "Ground Unavailable"}
-                                                    </h2>
-
-                                                    {booking.ground?.location && (
-                                                        <p className="text-sm text-slate-500 mt-2">
-                                                            📍 {booking.ground.location}
-                                                        </p>
-                                                    )}
-                                                </div>
-
-                                                {/* Booking Details */}
-                                                <div className="grid grid-cols-2 gap-4 mt-5">
-
-                                                    {/* Date */}
-                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                        <p className="text-xs font-medium text-slate-500">
-                                                            Booking Date
-                                                        </p>
-
-                                                        <p className="font-bold text-slate-800 mt-1">
-                                                            📅 {booking.bookingDate}
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Time */}
-                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                        <p className="text-xs font-medium text-slate-500">
-                                                            Start Time
-                                                        </p>
-
-                                                        <p className="font-bold text-slate-800 mt-1">
-                                                            🕐 {booking.startTime}
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Price */}
-                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                        <p className="text-xs font-medium text-slate-500">
-                                                            Total Amount
-                                                        </p>
-
-                                                        <p className="font-extrabold text-green-600 text-lg mt-1">
-                                                            ₹{booking.totalPrice}
-                                                        </p>
-                                                    </div>
-
-                                                    {/* Payment */}
-                                                    <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-                                                        <p className="text-xs font-medium text-slate-500">
-                                                            Payment Status
-                                                        </p>
-
-                                                        <p
-                                                            className={`font - bold capitalize mt - 1 ${
-    booking.paymentStatus === "paid"
-        ? "text-green-600"
-        : booking.paymentStatus === "pending"
-            ? "text-orange-500"
-            : "text-slate-600"
-} `}
-                                                        >
-                                                            {booking.paymentStatus}
-                                                        </p>
-                                                    </div>
-
-                                                </div>
-
-                                                {/* Booking ID */}
-                                                <div className="mt-5 bg-slate-50 rounded-xl px-4 py-3 flex justify-between items-center">
-                                                    <span className="text-xs text-slate-500">
-                                                        Booking ID
-                                                    </span>
-
-                                                    <span className="text-xs font-mono font-semibold text-slate-700">
-                                                        {booking._id}
-                                                    </span>
-                                                </div>
-
-                                                {/* Cancel */}
-                                                {booking.status === "booked" && (
-                                                    <button
-                                                        onClick={() =>
-                                                            cancelBooking(
-                                                                booking._id
-                                                            )
-                                                        }
-                                                        className="w-full mt-5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 hover:text-red-700 py-3 rounded-xl font-bold transition"
-                                                    >
-                                                        Cancel Booking
-                                                    </button>
-                                                )}
-
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
+                    <Link
+                        to="/grounds"
+                        className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold px-7 py-4 rounded-xl shadow-md transition"
+                    >
+                        + Book Another Ground
+                    </Link>
                 </div>
-            </section>
+
+                {/* Summary */}
+                <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-7 mb-10">
+
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+
+                        <div>
+                            <p className="text-slate-500 text-sm">
+                                Active Bookings
+                            </p>
+
+                            <p className="text-4xl font-extrabold text-slate-900 mt-1">
+                                {activeBookings.length}
+                            </p>
+                        </div>
+
+                        <div className="sm:text-right">
+                            <p className="text-slate-500 text-sm">
+                                Latest booking
+                            </p>
+
+                            <p className="text-lg font-bold text-green-600 mt-1">
+                                {latestBooking
+                                    ? getGroundName(latestBooking)
+                                    : "No active bookings"}
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {/* Loading */}
+                {loading && (
+                    <div className="flex justify-center py-20">
+                        <div className="w-12 h-12 border-4 border-green-600 border-t-transparent rounded-full animate-spin" />
+                    </div>
+                )}
+
+                {/* Empty */}
+                {!loading && activeBookings.length === 0 && (
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm text-center py-20 px-6">
+
+                        <div className="text-6xl mb-5">
+                            🏟️
+                        </div>
+
+                        <h2 className="text-2xl font-bold text-slate-900">
+                            No active bookings
+                        </h2>
+
+                        <p className="text-slate-500 mt-2 mb-7">
+                            You don't have any active sports ground bookings.
+                        </p>
+
+                        <Link
+                            to="/grounds"
+                            className="inline-flex bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl"
+                        >
+                            Explore Sports Grounds
+                        </Link>
+
+                    </div>
+                )}
+
+                {/* BOOKINGS */}
+                {!loading && activeBookings.length > 0 && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-7">
+
+                        {activeBookings.map((booking, index) => {
+
+                            const ground = getGround(booking);
+
+                            return (
+                                <div
+                                    key={booking._id || booking.id || index}
+                                    className="bg-white rounded-2xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-lg transition"
+                                >
+
+                                    {/* Ground Image */}
+                                    <div className="relative h-60 bg-slate-200">
+
+                                        <img
+                                            src={getGroundImage(booking)}
+                                            alt={getGroundName(booking)}
+                                            className="w-full h-full object-cover"
+                                            onError={(e) => {
+                                                e.currentTarget.src =
+                                                    "https://via.placeholder.com/800x500?text=Sports+Ground";
+                                            }}
+                                        />
+
+                                        {/* Latest */}
+                                        {index === 0 && (
+                                            <span className="absolute top-4 left-4 bg-green-600 text-white text-xs font-bold px-3 py-2 rounded-full">
+                                                LATEST BOOKING
+                                            </span>
+                                        )}
+
+                                        {/* Status */}
+                                        <span
+                                            className={`absolute top-4 right-4 text-xs font-bold px-3 py-2 rounded-full ${String(getBookingStatus(booking)).toLowerCase() ===
+                                                    "confirmed"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-yellow-100 text-yellow-700"
+                                                }`}
+                                        >
+                                            {String(getBookingStatus(booking)).toUpperCase()}
+                                        </span>
+
+                                    </div>
+
+                                    {/* Content */}
+                                    <div className="p-6">
+
+                                        {/* Ground */}
+                                        <div className="mb-6">
+
+                                            <p className="text-sm text-green-600 font-bold uppercase tracking-wide">
+                                                {getSportType(booking)}
+                                            </p>
+
+                                            <h2 className="text-2xl font-extrabold text-slate-900 mt-1">
+                                                {getGroundName(booking)}
+                                            </h2>
+
+                                            <p className="text-slate-500 mt-2">
+                                                📍 {getLocation(booking)}
+                                            </p>
+
+                                        </div>
+
+                                        {/* Booking details */}
+                                        <div className="grid grid-cols-2 gap-4 border-t border-slate-200 pt-5">
+
+                                            <div>
+                                                <p className="text-xs text-slate-400 uppercase font-semibold">
+                                                    Booking Date
+                                                </p>
+
+                                                <p className="font-bold text-slate-800 mt-1">
+                                                    {formatDate(booking.bookingDate)}
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <p className="text-xs text-slate-400 uppercase font-semibold">
+                                                    Start Time
+                                                </p>
+
+                                                <p className="font-bold text-slate-800 mt-1">
+                                                    {booking.startTime || "Not available"}
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <p className="text-xs text-slate-400 uppercase font-semibold">
+                                                    Total Amount
+                                                </p>
+
+                                                <p className="font-bold text-slate-800 mt-1">
+                                                    ₹{Number(getAmount(booking)).toLocaleString("en-IN")}
+                                                </p>
+                                            </div>
+
+                                            <div>
+                                                <p className="text-xs text-slate-400 uppercase font-semibold">
+                                                    Payment
+                                                </p>
+
+                                                <p className="font-bold text-green-600 mt-1 capitalize">
+                                                    {String(getPaymentStatus(booking))}
+                                                </p>
+                                            </div>
+
+                                        </div>
+
+                                        {/* Booking ID */}
+                                        <div className="mt-5 bg-slate-50 rounded-xl p-4">
+
+                                            <p className="text-xs text-slate-400 uppercase font-semibold">
+                                                Booking ID
+                                            </p>
+
+                                            <p className="text-sm font-mono text-slate-700 mt-1 break-all">
+                                                {booking._id || booking.id || "N/A"}
+                                            </p>
+
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="mt-5 flex gap-3">
+
+                                            <Link
+                                                to="/grounds"
+                                                className="flex-1 text-center bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition"
+                                            >
+                                                Book Again
+                                            </Link>
+
+                                            <button
+                                                onClick={() =>
+                                                    cancelBooking(
+                                                        booking._id || booking.id
+                                                    )
+                                                }
+                                                disabled={
+                                                    cancellingId ===
+                                                    (booking._id || booking.id)
+                                                }
+                                                className="flex-1 border border-red-300 text-red-600 hover:bg-red-50 font-bold py-3 rounded-xl transition disabled:opacity-50"
+                                            >
+                                                {cancellingId ===
+                                                    (booking._id || booking.id)
+                                                    ? "Cancelling..."
+                                                    : "Cancel Booking"}
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            );
+                        })}
+
+                    </div>
+                )}
+
+            </main>
 
             <Footer />
-        </>
+
+        </div>
     );
-}
+};
 
 export default MyBookings;
