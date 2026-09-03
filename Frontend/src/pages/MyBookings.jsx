@@ -232,7 +232,7 @@ const MyBookings = () => {
                     </div>
 
                     <Link
-                        to="/grounds"
+                        to="/"
                         className="inline-flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-bold px-7 py-4 rounded-xl shadow-md transition"
                     >
                         + Book Another Ground
@@ -294,7 +294,7 @@ const MyBookings = () => {
                         </p>
 
                         <Link
-                            to="/grounds"
+                            to="/"
                             className="inline-flex bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-3 rounded-xl"
                         >
                             Explore Sports Grounds
@@ -432,7 +432,7 @@ const MyBookings = () => {
                                         <div className="mt-5 flex gap-3">
 
                                             <Link
-                                                to="/grounds"
+                                                to="/"
                                                 className="flex-1 text-center bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-xl transition"
                                             >
                                                 Book Again
